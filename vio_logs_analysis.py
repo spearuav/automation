@@ -69,7 +69,7 @@ def main():
     
     report += f"**Docker Image ID:** `{image_id}`\n"
     image_sha256 = subprocess.getoutput(f"docker inspect --format='{{{{index .RepoDigests 0}}}}' {image_id}").split('@')[-1] if image_id != 'Not Found' else 'Not Found'
-    report += f"🐳 **Docker Image SHA256:** `{image_sha256}`\n\n"
+    report += f"**Docker Image SHA256:** `{image_sha256}`\n\n"
 
     report += "**Log Files Information:**\n"
 
