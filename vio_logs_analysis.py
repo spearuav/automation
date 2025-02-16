@@ -1,6 +1,8 @@
 import re
 import os
 from datetime import datetime, timedelta
+import subprocess
+
 
 analysis_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -58,7 +60,17 @@ def main():
     report = "Log Analysis Report\n"
     report += "=" * 50 + "\n"
     report += f"Log Analysis Created On: {analysis_time}\n\n"
+    latest_image_id_path = os.path.join(LOG_DIR, "latest_image_id.txt")
+    # Extract Image ID if the file exists
+    image_id = "Not Found"
+    if os.path.exists(latest_image_id_path):
+        with open(latest_image_id_path, "r") as file:
+            image_id = file.readline().strip()
     
+    report += f"**Docker Image ID:** `{image_id}`\n"
+    image_sha256 = subprocess.getoutput(f"docker inspect --format='{{{{index .RepoDigests 0}}}}' {image_id}").split('@')[-1] if image_id != 'Not Found' else 'Not Found'
+    report += f"🐳 **Docker Image SHA256:** `{image_sha256}`\n\n"
+
     report += "**Log Files Information:**\n"
 
     report += "=" * 50 + "\n\n"
