@@ -62,6 +62,7 @@ def start_tmux_session():
     else:
         run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
     run_command("tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk '{print $3}'" > ~/automation-logs/latest_image_id.txt' C-m")
+    run_command("tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk \\\"{print \\$3}\\\" > ~/automation-logs/latest_image_id.txt' C-m")
 
     time.sleep(5)
     if (DEBUG):
