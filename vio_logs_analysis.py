@@ -61,12 +61,12 @@ def main():
     
     report += "\n**Log Files Information:**"
 
-    for service, log_file, log_path in LOG_FILES.items():
-        if os.path.exists(log_file):
+    for service, log_path in LOG_FILES.items():
+        if os.path.exists(log_path):
             log_time = get_log_timestamp(log_path)
-            report += f"Analyzing {service} Log ({log_file}):\n"
-            report += f"   └ 🕒 Last Modified: {log_time}\n"
-            issues, timestamp_issues = analyze_log(log_file)
+            report += f"Analyzing {service} Log ({log_path}):\n"
+            report += f"Last Modified: {log_time}\n"
+            issues, timestamp_issues = analyze_log(log_path)
             
             if issues:
                 report += "- Errors & Failures Found:\n"
@@ -86,16 +86,15 @@ def main():
             else:
                 report += "- No timestamp inconsistencies detected.\n"
             
-            report += "=" * 50
-            
-            report += "\n"
+            report += "=" * 50 +"\n\n"
         else:
-            report += f"Log file {log_file} not found.\n"
+            report += f"Log file {log_path} not found.\n"
     
-    with open("log_analysis_report.txt", "w", encoding='utf-8') as report_file:
+    report_path = os.path.join(LOG_DIR, "log_analysis_report.txt")
+    with open(report_path, "w", encoding='utf-8') as report_file:
         report_file.write(report)
     
-    print("Analysis completed. Report saved as log_analysis_report.txt")
+    print(f"Analysis completed. Report saved as: {report_path}")
 
 if __name__ == "__main__":
     main()
