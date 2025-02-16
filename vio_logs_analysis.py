@@ -2,10 +2,12 @@ import re
 import os
 from datetime import datetime, timedelta
 
+LOG_DIR = os.path.expanduser("~/automation-logs/")
+
 LOG_FILES = {
-    "Mavlink": "~/automation-logs/mavlink.log",
-    "VINS": "~/automation-logs/vins.log",
-    "VIO": "~/automation-logs/vio.log"
+    "Mavlink": os.path.join(LOG_DIR, "mavlink.log"),
+    "VINS": os.path.join(LOG_DIR, "vins.log"),
+    "VIO": os.path.join(LOG_DIR, "vio.log")
 }
 
 ERROR_PATTERNS = [
