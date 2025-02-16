@@ -55,11 +55,14 @@ def analyze_log(log_file):
     return issues, timestamp_issues
 
 def main():
-    report = "Log Analysis Report\n\n"
-    report += "=" * 50
-    report += f"Log Analysis Created On: {analysis_time}"
+    report = "Log Analysis Report\n"
+    report += "=" * 50 + "\n"
+    report += f"Log Analysis Created On: {analysis_time}\n\n"
     
-    report += "\n**Log Files Information:**"
+    report += "**Log Files Information:**\n"
+
+    report += "=" * 50 + "\n\n"
+
 
     for service, log_path in LOG_FILES.items():
         if os.path.exists(log_path):
@@ -88,7 +91,7 @@ def main():
             
             report += "=" * 50 +"\n\n"
         else:
-            report += f"Log file {log_path} not found.\n"
+            report += f"Log file {log_path} not found.\n\n"
     
     report_path = os.path.join(LOG_DIR, "log_analysis_report.txt")
     with open(report_path, "w", encoding='utf-8') as report_file:
