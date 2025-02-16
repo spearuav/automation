@@ -6,6 +6,8 @@ DEBUG=0
 
 LOG_DIR = os.path.expanduser("~/automation-logs")  # Store logs outside the container
 
+latest_image_id_path = os.path.join(LOG_DIR, "latest_image_id.txt")
+
 def run_command(command):
     """Runs a shell command and waits for it to complete."""
     subprocess.run(command, shell=True, check=True)
@@ -60,7 +62,8 @@ def start_tmux_session():
         run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:3.16.15' C-m")
     else:
         run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
-    run_command("tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk \"{print \\$3}\" > latest_image_id.txt' C-m")
+    run_command("tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk \"{print \\$3}\" > ~/automation-logs/latest_image_id.txt' C-m")
+
     time.sleep(5)
     log_dir = os.path.expanduser("~/automation-logs")
     if (DEBUG):
