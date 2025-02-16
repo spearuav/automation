@@ -57,19 +57,17 @@ def start_tmux_session():
 
     # Terminal 1: Manage Docker and Run VINS
     run_command("tmux send-keys -t 0 'docker stop vision-computer && docker rm vision-computer' C-m")
-    run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
     if (DEBUG):
         run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:3.16.15' C-m")
     else:
         run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
-    run_command("tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk \"{print \\$3}\" > ~/automation-logs/latest_image_id.txt' C-m")
+    run_command("tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk '{print $3}'" > ~/automation-logs/latest_image_id.txt' C-m")
 
     time.sleep(5)
-    log_dir = os.path.expanduser("~/automation-logs")
     if (DEBUG):
-        run_command(f"tmux send-keys -t 0 'docker run -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a  -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {log_dir}:/home/spearuav/automation-logs --name vision-computer 1e0cc57adcb3' C-m")
+        run_command(f"tmux send-keys -t 0 'docker run -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a  -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer 1e0cc57adcb3' C-m")
     else:
-        run_command(f"tmux send-keys -t 0 'image_id=$(cat latest_image_id.txt) && docker run -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {log_dir}:/home/spearuav/automation-logs --name vision-computer $image_id' C-m")
+        run_command(f"tmux send-keys -t 0 'image_id=$(cat ~/automation-logs/latest_image_id.txt) && docker run -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer $image_id' C-m")
 
     # Wait for Docker to start
     if not wait_for_docker():
