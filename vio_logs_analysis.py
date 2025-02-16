@@ -3,9 +3,9 @@ import os
 from datetime import datetime, timedelta
 
 LOG_FILES = {
-    "Mavlink": "mavlink.log",
-    "VINS": "vins.log",
-    "VIO": "vio.log"
+    "Mavlink": "~/automation-logs/mavlink.log",
+    "VINS": "~/automation-logs/vins.log",
+    "VIO": "~/automation-logs/vio.log"
 }
 
 ERROR_PATTERNS = [
