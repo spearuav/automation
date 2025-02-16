@@ -2,6 +2,8 @@ import re
 import os
 from datetime import datetime, timedelta
 
+analysis_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 LOG_DIR = os.path.expanduser("~/automation-logs/")
 
 LOG_FILES = {
@@ -13,6 +15,13 @@ LOG_FILES = {
 ERROR_PATTERNS = [
     "error", "failed", "not found", "timeout", "crash", "exception", "segmentation fault"
 ]
+
+def get_log_timestamp(log_path):
+    """Returns the last modified time of a log file in a human-readable format."""
+    if os.path.exists(log_path):
+        mod_time = os.path.getmtime(log_path)
+        return datetime.fromtimestamp(mod_time).strftime("%Y-%m-%d %H:%M:%S")
+    return "Log file not found"
 
 def extract_timestamps(log_file):
     timestamps = []
@@ -47,9 +56,16 @@ def analyze_log(log_file):
 
 def main():
     report = "Log Analysis Report\n\n"
-    for service, log_file in LOG_FILES.items():
+    report += "=" * 50
+    report += f"Log Analysis Created On: {analysis_time}"
+    
+    report += "\n**Log Files Information:**"
+
+    for service, log_file, log_path in LOG_FILES.items():
         if os.path.exists(log_file):
+            log_time = get_log_timestamp(log_path)
             report += f"Analyzing {service} Log ({log_file}):\n"
+            report += f"   └ 🕒 Last Modified: {log_time}\n"
             issues, timestamp_issues = analyze_log(log_file)
             
             if issues:
@@ -69,7 +85,9 @@ def main():
                     report += "  ... more inconsistencies found\n"
             else:
                 report += "- No timestamp inconsistencies detected.\n"
-                
+            
+            report += "=" * 50
+            
             report += "\n"
         else:
             report += f"Log file {log_file} not found.\n"
