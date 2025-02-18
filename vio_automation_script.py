@@ -66,9 +66,9 @@ def start_tmux_session():
 
     time.sleep(5)
     if (DEBUG):
-        run_command(f"tmux send-keys -t 0 'docker run -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a  -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer 1e0cc57adcb3' C-m")
+        run_command(f"tmux send-keys -t 0 'docker run --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a  -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer 1e0cc57adcb3' C-m")
     else:
-        run_command(f"tmux send-keys -t 0 'image_id=$(cat ~/automation-logs/latest_image_id.txt) && docker run -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer $image_id' C-m")
+        run_command(f"tmux send-keys -t 0 'image_id=$(cat ~/automation-logs/latest_image_id.txt) && docker run --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer $image_id' C-m")
 
     # Wait for Docker to start
     if not wait_for_docker():
@@ -76,7 +76,7 @@ def start_tmux_session():
         return
 
     # Ensure log directory exists inside the container
-    run_command("docker exec -it vision-computer mkdir -p /home/spearuav/automation-logs")
+    run_command("docker exec vision-computer mkdir -p /home/spearuav/automation-logs")
     # Ensure Docker container is running before executing commands inside it
     if not is_docker_running():
        print("? Error: Docker container is not running. Restarting container...")
@@ -87,18 +87,18 @@ def start_tmux_session():
            return
 
     # Now we can safely create the log directory inside the container
-    run_command("docker exec -it vision-computer mkdir -p /home/spearuav/automation-logs")
+    run_command("docker exec vision-computer mkdir -p /home/spearuav/automation-logs")
 
     # Terminal 1: Run VINS and Log
     run_command(f"tmux send-keys -t 0 'ros2 run vins vins_node | tee {LOG_DIR}/vins.log' C-m")
 
     # Terminal 2: Verify and Run rosbag
-    run_command("tmux send-keys -t 1 'docker exec -it vision-computer /bin/bash' C-m")
+    run_command("tmux send-keys -t 1 'docker exec vision-computer /bin/bash' C-m")
     run_command("tmux send-keys -t 1 'source ros2_ws/install/setup.bash' C-m")
     run_command(f"tmux send-keys -t 1 'cd /rosbag/ && ros2 bag play tt3 | tee {LOG_DIR}/rosbag.log' C-m")
 
     # Terminal 3: Run Mavlink logs and Log
-    run_command("tmux send-keys -t 2 'docker exec -it vision-computer /bin/bash' C-m")
+    run_command("tmux send-keys -t 2 'docker exec vision-computer /bin/bash' C-m")
     run_command("tmux send-keys -t 2 'source ros2_ws/install/setup.bash' C-m")
     run_command(f"tmux send-keys -t 2 'ros2 service call /vins_enable_service viper_interfaces/srv/VioEnable \"{{\\\"enable\\\":True}}\" | tee {LOG_DIR}/mavlink.log' C-m")
     run_command(f"tmux send-keys -t 2 'ros2 topic echo /mavlink_cmds | tee -a {LOG_DIR}/mavlink.log' C-m")
