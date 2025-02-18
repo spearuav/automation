@@ -15,8 +15,8 @@ def run_command(command):
 def is_docker_running():
     """Checks if the vision-computer Docker container is running."""
     try:
-        output = subprocess.check_output("docker inspect -f '{{.State.Running}}' vision-computer", shell=True).decode().strip()
-        return output == "true"
+        output = subprocess.check_output("docker ps | grep vision-computer", shell=True).decode()
+        return "vision-computer" in output
     except subprocess.CalledProcessError:
         return False
 
