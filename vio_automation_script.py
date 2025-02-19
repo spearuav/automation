@@ -50,6 +50,19 @@ def wait_for_docker():
     print("? Timeout: Docker container did not start properly.")
     return False
 
+def docker_exec_retry(command, retries=5, delay=2):
+    """Runs docker exec with retries to handle container readiness issues."""
+    for attempt in range(retries):
+        try:
+            run_command(command)
+            return  # Success, exit function
+        except subprocess.CalledProcessError as e:
+            print(f"? Docker exec failed (attempt {attempt+1}/{retries}): {e}")
+            time.sleep(delay)
+
+    print("? Docker exec failed after multiple attempts. Exiting.")
+    exit(1)
+
 
 def setup_logs():
     """Creates a directory for logs on the host and inside the container."""
@@ -110,15 +123,14 @@ def start_tmux_session():
 
     # Ensure log directory exists inside the container
     if IS_GITHUB_ACTIONS:
-        run_command(
-            "docker exec vision-computer mkdir -p /home/spearuav/automation-logs")
+        docker_exec_retry("docker exec vision-computer mkdir -p /home/spearuav/automation-logs")
     else:
-        run_command("docker exec -it vision-computer mkdir -p /home/spearuav/automation-logs")
+        docker_exec_retry("docker exec -it vision-computer mkdir -p /home/spearuav/automation-logs")
 
     if (DEBUG):
-        run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:3.16.15' C-m")
+        docker_exec_retry("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:3.16.15' C-m")
     else:
-        run_command("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
+        docker_exec_retry("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
     run_command(
         "tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk \"{print \\$3}\" > ~/automation-logs/latest_image_id.txt' C-m")
 
@@ -157,17 +169,17 @@ def start_tmux_session():
 
     # Terminal 2: Verify and Run rosbag
     if IS_GITHUB_ACTIONS:
-        run_command("tmux send-keys -t 1 'docker exec vision-computer /bin/bash' C-m")
+        docker_exec_retry("tmux send-keys -t 1 'docker exec vision-computer /bin/bash' C-m")
     else:
-        run_command("tmux send-keys -t 1 'docker exec -it vision-computer /bin/bash' C-m")
+        docker_exec_retry("tmux send-keys -t 1 'docker exec -it vision-computer /bin/bash' C-m")
     run_command("tmux send-keys -t 1 'source ros2_ws/install/setup.bash' C-m")
     run_command(f"tmux send-keys -t 1 'cd /rosbag/ && ros2 bag play tt3 | tee {LOG_DIR}/rosbag.log' C-m")
 
     # Terminal 3: Run Mavlink logs and Log
     if IS_GITHUB_ACTIONS:
-        run_command("tmux send-keys -t 2 'docker exec vision-computer /bin/bash' C-m")
+        docker_exec_retry("tmux send-keys -t 2 'docker exec vision-computer /bin/bash' C-m")
     else:
-        run_command("tmux send-keys -t 2 'docker exec -it vision-computer /bin/bash' C-m")
+        docker_exec_retry("tmux send-keys -t 2 'docker exec -it vision-computer /bin/bash' C-m")
     run_command("tmux send-keys -t 2 'source ros2_ws/install/setup.bash' C-m")
     run_command(
         f"tmux send-keys -t 2 'ros2 service call /vins_enable_service viper_interfaces/srv/VioEnable \"{{\\\"enable\\\":True}}\" | tee {LOG_DIR}/mavlink.log' C-m")
