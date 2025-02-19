@@ -33,14 +33,21 @@ def is_docker_running():
 
 
 def wait_for_docker():
-    """Waits until Docker container starts before proceeding."""
+    """Waits until Docker container is running and ready."""
     print("Waiting for Docker container to start...")
     for i in range(30):  # Max wait time: 30 seconds
-        if is_docker_running():
-            print("? Docker container is running! Proceeding with automation.")
-            return True
+        try:
+            output = subprocess.check_output("docker inspect -f '{{.State.Running}}' vision-computer",
+                                             shell=True).decode().strip()
+            if output == "true":
+                print("? Docker container is fully running! Proceeding with automation.")
+                return True
+        except subprocess.CalledProcessError:
+            pass  # Ignore errors, keep retrying
+
         time.sleep(2)  # Check every 2 seconds
-    print("? Timeout: Docker container did not start.")
+
+    print("? Timeout: Docker container did not start properly.")
     return False
 
 
