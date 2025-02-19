@@ -9,14 +9,17 @@ LOG_DIR = os.path.expanduser("~/automation-logs")  # Store logs outside the cont
 latest_image_id_path = os.path.join(LOG_DIR, "latest_image_id.txt")
 
 def remove_existing_container():
-    """Stops and removes the existing container if it exists."""
+    """Stops and removes the existing container if it exists, ensuring no conflicts."""
     try:
         output = subprocess.check_output("docker ps -a | grep vision-computer", shell=True).decode()
         if "vision-computer" in output:
             print("? Stopping and removing existing container...")
-            run_command("docker stop vision-computer || true && docker rm vision-computer || true")
+            run_command("docker stop vision-computer || true")
+            run_command("docker rm -f vision-computer || true")  # Force removal
+            time.sleep(3)  # Give Docker a moment to clean up
     except subprocess.CalledProcessError:
         print("? No existing container found. Continuing...")
+
 
 def run_command(command):
     """Runs a shell command and waits for it to complete."""
@@ -33,14 +36,18 @@ def is_docker_running():
 
 
 def wait_for_docker():
-    """Waits until Docker container is running and ready."""
+    """Waits for Docker container to fully initialize and be ready for commands."""
     print("Waiting for Docker container to start...")
-    for i in range(30):  # Max wait time: 30 seconds
+    for i in range(30):  # Max wait time: 60 seconds
         try:
+            # Ensure the container exists and is actually running
             output = subprocess.check_output("docker inspect -f '{{.State.Running}}' vision-computer",
                                              shell=True).decode().strip()
-            if output == "true":
-                print("? Docker container is fully running! Proceeding with automation.")
+            health_status = subprocess.check_output("docker inspect -f '{{.State.Health.Status}}' vision-computer",
+                                                    shell=True).decode().strip()
+
+            if output == "true" and health_status in ["healthy", "starting"]:
+                print(f"? Docker container is running and in '{health_status}' state. Proceeding...")
                 return True
         except subprocess.CalledProcessError:
             pass  # Ignore errors, keep retrying
@@ -50,7 +57,8 @@ def wait_for_docker():
     print("? Timeout: Docker container did not start properly.")
     return False
 
-def docker_exec_retry(command, retries=5, delay=2):
+
+def docker_exec_retry(command, retries=5, delay=3):
     """Runs docker exec with retries to handle container readiness issues."""
     for attempt in range(retries):
         try:
@@ -62,7 +70,6 @@ def docker_exec_retry(command, retries=5, delay=2):
 
     print("? Docker exec failed after multiple attempts. Exiting.")
     exit(1)
-
 
 def setup_logs():
     """Creates a directory for logs on the host and inside the container."""
@@ -78,10 +85,9 @@ def setup_logs():
 def start_tmux_session():
     IS_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
-    remove_existing_container()
-
     print("? Starting automation script...")
     setup_logs()
+    remove_existing_container()
 
     # Start a new tmux session
     run_command("tmux new-session -d -s test_session")
