@@ -131,49 +131,6 @@ def start_tmux_session():
         print("? Exiting due to Docker startup failure.")
         return
 
-    # Ensure log directory exists inside the container
-    if IS_GITHUB_ACTIONS:
-        docker_exec_retry("docker exec vision-computer mkdir -p /home/spearuav/automation-logs")
-    else:
-        docker_exec_retry("docker exec -it vision-computer mkdir -p /home/spearuav/automation-logs")
-
-    if (DEBUG):
-        docker_exec_retry("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:3.16.15' C-m")
-    else:
-        docker_exec_retry("tmux send-keys -t 0 'docker pull ghcr.io/spearuav/vision-computer:latest' C-m")
-    run_command(
-        "tmux send-keys -t 0 'docker images | grep spearuav/vision-computer | head -n 1 | awk \"{print \\$3}\" > ~/automation-logs/latest_image_id.txt' C-m")
-
-    time.sleep(5)
-    if IS_GITHUB_ACTIONS:
-        if (DEBUG):
-            run_command(
-                f"tmux send-keys -t 0 ' docker run -d --init --memory=4g --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a  -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer 1e0cc57adcb3' C-m")
-        else:
-            run_command(
-                f"tmux send-keys -t 0 'image_id=$(cat ~/automation-logs/latest_image_id.txt) &&  docker run -d --init --memory=4g --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer $image_id' C-m")
-    else:
-        if (DEBUG):
-            run_command(
-                f"tmux send-keys -t 0 ' docker run -d --init --memory=4g -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a  -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer 1e0cc57adcb3' C-m")
-        else:
-            run_command(
-                f"tmux send-keys -t 0 'image_id=$(cat ~/automation-logs/latest_image_id.txt) &&  docker run -d --init --memory=4g -it --privileged --runtime nvidia --network host --device /dev/video0 --device /dev/video1 --device /dev/video2 --device /dev/video3 --device /dev/ttyTHS0 --device /dev/ttyACM0 --device /dev/ttyACM1 -v /mnt/sd/spearuav/ninox-viper-payload-sw/configuration:/mnt/sd/spearuav/ninox-viper-payload-sw/configuration -v /mnt/sd/spearuav/logs:/mnt/sd/spearuav/logs -v /tmp/argus_socket:/tmp/argus_socket -v /lib/modules/5.10.104-g018a5562a:/lib/modules/5.10.104-g018a5562a -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix -v /rosbag:/rosbag -v {LOG_DIR}:/home/spearuav/automation-logs --name vision-computer $image_id' C-m")
-
-    # Wait for Docker to start
-    if not wait_for_docker():
-        print("? Exiting due to Docker startup failure.")
-        return
-
-    # Ensure Docker container is running before executing commands inside it
-    if not is_docker_running():
-        print("? Error: Docker container is not running. Restarting container...")
-        run_command("docker restart vision-computer")
-        time.sleep(5)  # Give time for the container to start
-        if not is_docker_running():
-            print("? Error: Docker container failed to start.")
-            return
-
     # Terminal 1: Run VINS and Log
     run_command(f"tmux send-keys -t 0 'ros2 run vins vins_node | tee {LOG_DIR}/vins.log' C-m")
 
