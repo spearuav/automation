@@ -9,8 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug Secrets
-        run: echo "TENANT_ID=${{ secrets.OAUTH_TENANT_ID }}"
+      - name: Run Email Script
+        env:
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+          OAUTH_TENANT_ID: ${{ secrets.OAUTH_TENANT_ID }}
+        run: |
+          echo "CLIENT_ID=${OAUTH_CLIENT_ID}"
+          echo "CLIENT_SECRET=${OAUTH_CLIENT_SECRET}"
+          echo "TENANT_ID=${OAUTH_TENANT_ID}"
+          python email_test.py
 
       - name: Checkout repository
         uses: actions/checkout@v3
