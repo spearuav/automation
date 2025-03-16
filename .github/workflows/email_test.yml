@@ -1,0 +1,27 @@
+name: Send Email with Microsoft Graph
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: pip install requests msal
+
+    - name: Run Email Script
+      env:
+        CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+        TENANT_ID: ${{ secrets.OAUTH_TENANT_ID }}
+      run: python email_test.py
