@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug Secrets
+        run: echo "TENANT_ID=${{ secrets.OAUTH_TENANT_ID }}"
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
