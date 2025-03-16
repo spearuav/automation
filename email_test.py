@@ -4,9 +4,9 @@ import requests
 import msal
 
 # Load secrets from environment variables
-CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")#"8da4e345-cb32-43b6-a809-accd6ad28b96"#os.getenv("OAUTH_CLIENT_ID")
-CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET")#"hIn8Q~ezVFTXzAoP54FZqHSHNjTr_-w5Gr_kpcPp"#os.getenv("OAUTH_CLIENT_SECRET")
-TENANT_ID = os.getenv("OAUTH_TENANT_ID")#"53040ea5-7f4b-4d9d-99e2-659e24e12639"#os.getenv("OAUTH_TENANT_ID")
+CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
+CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET")
+TENANT_ID = os.getenv("OAUTH_TENANT_ID")
 
 EMAIL_SENDER = "eitan.amit@spearuav.com"
 EMAIL_RECIPIENT = "eitan.amit@spearuav.com"
