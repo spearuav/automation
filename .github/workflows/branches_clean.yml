@@ -1,0 +1,28 @@
+name: Branch Cleanup
+
+on:
+  workflow_dispatch:  # Allows manual execution
+  schedule:
+    - cron: '0 15 * * 4'  # Runs every Thursday at 18:00 Israel time (UTC+3), which is 15:00 UTC
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up GitHub CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh jq
+
+      - name: Run Branch Cleanup Script
+        env:
+          CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+          TENANT_ID: ${{ secrets.OAUTH_TENANT_ID }}
+        run: |
+          chmod +x scripts/cleanup_branches.sh
+          scripts/cleanup_branches.sh
