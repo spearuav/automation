@@ -24,6 +24,10 @@ jobs:
           set -e   # Stop script on first error
           env      # Print environment variables for debugging
 
+      - name: Debug `gh repo list`
+        run: |
+          gh repo list $ORG --json name --limit 200 --jq '.[] | .name'
+
       - name: Run Branch Cleanup Script
         env:
           CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
