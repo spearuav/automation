@@ -28,8 +28,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          gh repo list $ORG --json name --limit 200
-
+          gh repo list $ORG --visibility all --json name --limit 200
 
       - name: Run Branch Cleanup Script
         env:
