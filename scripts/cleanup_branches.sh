@@ -31,9 +31,7 @@ CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" +"%Y-%m-%d")
 IGNORED_BRANCHES=()
 
 # Lists for action
-NOTIFY_LIST=("eitan.amit@spearuav.com")
-IGNORE_LIST=("ben.tubul@spearuav.com","chen.arazi@spearuav.com","eden@spearuav.com","eitan.amit@spearuav.com","noa.malul@spearuav.com","roie.geron@spearuav.com","tzuriel.lampner@spearuav.com","zafrir.zinger@spearuav.com","gil.cohn@spearuav.com","mandel.yonatan@gmail.com","noam.levy@spearuav.com","yair.shlomi@spearuav.com","guy.shadmon@spearuav.com")
-
+NOTIFY_LIST=("eitan.amit@spearuav.com","ben.tubul@spearuav.com","chen.arazi@spearuav.com","eden@spearuav.com","eitan.amit@spearuav.com","noa.malul@spearuav.com","roie.geron@spearuav.com","tzuriel.lampner@spearuav.com","zafrir.zinger@spearuav.com","gil.cohn@spearuav.com","mandel.yonatan@gmail.com","noam.levy@spearuav.com","yair.shlomi@spearuav.com","guy.shadmon@spearuav.com")
 
 echo "Checking for branches older than $CUTOFF_DAYS days..."
 
