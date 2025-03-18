@@ -29,7 +29,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Fetching repositories..."
-          gh api --paginate "orgs/$ORG/repos" --jq '.[] | .name'
+          gh api --paginate "/user/repos" --jq '.[] | .name'
+
 
       - name: Run Branch Cleanup Script
         env:
