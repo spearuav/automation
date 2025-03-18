@@ -157,28 +157,28 @@ for email in "${!NOTIFY_EMAILS[@]}"; do
     # Create JSON payload
     JSON_FILE="email_payload_${email//[@.]/_}.json"
 
-    cat <<EOF > "$JSON_FILE"
-    {
-        "message": {
-            "subject": "[Branch Cleanup] Old Branches in $ORG",
-            "body": {
-                "contentType": "Text",
-                "content": "Dear User,\n\nPlease find attached list of old branches in $ORG that are older than 14 days.\nPlease review and consider merging or deleting them.\n\nThanks,\nRepo Cleanup Bot"
-            },
-            "toRecipients": [
-                { "emailAddress": { "address": "$email" } }
-            ],
-            "attachments": [
-                {
-                    "@odata.type": "#microsoft.graph.fileAttachment",
-                    "name": "old_branches.csv",
-                    "contentBytes": "$BASE64_USER_CSV",
-                    "contentType": "text/csv"
-                }
-            ]
-        }
+cat <<EOF > "$JSON_FILE"
+{
+    "message": {
+        "subject": "[Branch Cleanup] Old Branches in $ORG",
+        "body": {
+            "contentType": "Text",
+            "content": "Dear User,\n\nPlease find attached list of old branches in $ORG that are older than 14 days.\nPlease review and consider merging or deleting them.\n\nThanks,\nRepo Cleanup Bot"
+        },
+        "toRecipients": [
+            { "emailAddress": { "address": "$email" } }
+        ],
+        "attachments": [
+            {
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                "name": "old_branches.csv",
+                "contentBytes": "$BASE64_USER_CSV",
+                "contentType": "text/csv"
+            }
+        ]
     }
-    EOF
+}
+EOF
 
     # Send the email with the attachment
     RESPONSE=$(curl -s -X POST "https://graph.microsoft.com/v1.0/users/$EMAIL_FROM/sendMail" \
