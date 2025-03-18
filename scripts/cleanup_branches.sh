@@ -250,6 +250,4 @@ else
     echo "📩 Email with attachment sent successfully!"
 fi
 
-
 echo "✅ Cleanup Completed!"
-read -p "Press Enter to exit..."
