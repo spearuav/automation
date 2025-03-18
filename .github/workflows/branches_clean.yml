@@ -26,9 +26,10 @@ jobs:
 
       - name: Debug `gh repo list`
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           gh repo list $ORG --json name --limit 200
+
 
       - name: Run Branch Cleanup Script
         env:
