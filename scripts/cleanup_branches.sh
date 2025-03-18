@@ -31,9 +31,7 @@ CUTOFF_DATE=$(date -d "$CUTOFF_DAYS days ago" +"%Y-%m-%d")
 IGNORED_BRANCHES=()
 
 # Lists for action
-NOTIFY_LIST=("eitan.amit@spearuav.com")
-IGNORE_LIST=("ben.tubul@spearuav.com","chen.arazi@spearuav.com","eden@spearuav.com","eitan.amit@spearuav.com","noa.malul@spearuav.com","roie.geron@spearuav.com","tzuriel.lampner@spearuav.com","zafrir.zinger@spearuav.com","gil.cohn@spearuav.com","mandel.yonatan@gmail.com","noam.levy@spearuav.com","yair.shlomi@spearuav.com","guy.shadmon@spearuav.com")
-
+NOTIFY_LIST=("eitan.amit@spearuav.com","ben.tubul@spearuav.com","chen.arazi@spearuav.com","eden@spearuav.com","eitan.amit@spearuav.com","noa.malul@spearuav.com","roie.geron@spearuav.com","tzuriel.lampner@spearuav.com","zafrir.zinger@spearuav.com","gil.cohn@spearuav.com","mandel.yonatan@gmail.com","noam.levy@spearuav.com","yair.shlomi@spearuav.com","guy.shadmon@spearuav.com")
 
 echo "Checking for branches older than $CUTOFF_DAYS days..."
 
@@ -157,28 +155,28 @@ for email in "${!NOTIFY_EMAILS[@]}"; do
     # Create JSON payload
     JSON_FILE="email_payload_${email//[@.]/_}.json"
 
-    cat <<EOF > "$JSON_FILE"
-    {
-        "message": {
-            "subject": "[Branch Cleanup] Old Branches in $ORG",
-            "body": {
-                "contentType": "Text",
-                "content": "Dear User,\n\nPlease find attached list of old branches in $ORG that are older than 14 days.\nPlease review and consider merging or deleting them.\n\nThanks,\nRepo Cleanup Bot"
-            },
-            "toRecipients": [
-                { "emailAddress": { "address": "$email" } }
-            ],
-            "attachments": [
-                {
-                    "@odata.type": "#microsoft.graph.fileAttachment",
-                    "name": "old_branches.csv",
-                    "contentBytes": "$BASE64_USER_CSV",
-                    "contentType": "text/csv"
-                }
-            ]
-        }
+cat <<EOF > "$JSON_FILE"
+{
+    "message": {
+        "subject": "[Branch Cleanup] Old Branches in $ORG",
+        "body": {
+            "contentType": "Text",
+            "content": "Dear User,\n\nPlease find attached list of old branches in $ORG that are older than 14 days.\nPlease review and consider merging or deleting them.\n\nThanks,\nRepo Cleanup Bot"
+        },
+        "toRecipients": [
+            { "emailAddress": { "address": "$email" } }
+        ],
+        "attachments": [
+            {
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                "name": "old_branches.csv",
+                "contentBytes": "$BASE64_USER_CSV",
+                "contentType": "text/csv"
+            }
+        ]
     }
-    EOF
+}
+EOF
 
     # Send the email with the attachment
     RESPONSE=$(curl -s -X POST "https://graph.microsoft.com/v1.0/users/$EMAIL_FROM/sendMail" \
@@ -250,6 +248,4 @@ else
     echo "📩 Email with attachment sent successfully!"
 fi
 
-
 echo "✅ Cleanup Completed!"
-read -p "Press Enter to exit..."
