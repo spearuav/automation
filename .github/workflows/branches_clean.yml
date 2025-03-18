@@ -26,7 +26,7 @@ jobs:
 
       - name: Debug `GITHUB_TOKEN` Scope
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           gh auth status
 
@@ -39,13 +39,13 @@ jobs:
 
       - name: Debug `gh repo list 2`
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           gh repo list $ORG --visibility private --json name --limit 200
 
       - name: Debug `gh repo list 3`
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           gh repo list $ORG --visibility internal --json name --limit 200
 
@@ -55,7 +55,7 @@ jobs:
           CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
           TENANT_ID: ${{ secrets.OAUTH_TENANT_ID }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           chmod +x scripts/cleanup_branches.sh
           scripts/cleanup_branches.sh
