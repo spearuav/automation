@@ -3,7 +3,7 @@ name: Branch Cleanup
 on:
   workflow_dispatch:  # Allows manual execution
   schedule:
-    - cron: '0 15 * * 4'  # Runs every Thursday at 18:00 Israel time (UTC+3), which is 15:00 UTC
+    - cron: '0 10 * * 4'  # Runs every Thursday at 13:00 Israel time (UTC+3), which is 10:00 UTC
 
 jobs:
   cleanup:
