@@ -18,6 +18,12 @@ jobs:
           sudo apt update
           sudo apt install -y gh jq
 
+      - name: Set Up Debugging
+        run: |
+          set -x   # Print each command before running
+          set -e   # Stop script on first error
+          env      # Print environment variables for debugging
+
       - name: Run Branch Cleanup Script
         env:
           CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
