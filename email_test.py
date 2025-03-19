@@ -12,7 +12,7 @@ print(f"Debug: CLIENT_ID={CLIENT_ID}")
 print(f"Debug: CLIENT_SECRET={'Set' if CLIENT_SECRET else 'Missing'}")
 print(f"Debug: TENANT_ID={TENANT_ID}")
 
- if not CLIENT_ID or not CLIENT_SECRET or not TENANT_ID:
+ if not CLIENT_ID or not CLIENT_SECRET or not TENANT_ID
     raise ValueError(f"❌ Missing environment variables: CLIENT_ID={CLIENT_ID}, CLIENT_SECRET={'Set' if CLIENT_SECRET else 'Missing'}, TENANT_ID={TENANT_ID}")
 
 EMAIL_SENDER = "eitan.amit@spearuav.com"
