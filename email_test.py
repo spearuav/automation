@@ -62,3 +62,7 @@ if response.status_code == 202:
     print("✅ Email sent successfully!")
 else:
     print(f"❌ Failed to send email. Response: {response.status_code}, {response.text}")
+
+
+
+
