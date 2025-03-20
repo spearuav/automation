@@ -1,18 +1,11 @@
-import os
-import json
-import requests
-import msal
+import os, json, requests, msal
 
 # Load secrets from environment variables
-CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
-CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET")
-TENANT_ID = os.getenv("OAUTH_TENANT_ID")
+CLIENT_ID =  os.getenv("OAUTH_CLIENT_ID")
+CLIENT_SECRET =os.getenv("OAUTH_CLIENT_SECRET")
+TENANT_ID   =   os.getenv("OAUTH_TENANT_ID")
 
-print(f"Debug: CLIENT_ID={CLIENT_ID}")
-print(f"Debug: CLIENT_SECRET={'Set' if CLIENT_SECRET else 'Missing'}")
-print(f"Debug: TENANT_ID={TENANT_ID}")
-
- if not CLIENT_ID or not CLIENT_SECRET or not TENANT_ID
+if not CLIENT_ID or not CLIENT_SECRET or not TENANT_ID:
     raise ValueError(f"❌ Missing environment variables: CLIENT_ID={CLIENT_ID}, CLIENT_SECRET={'Set' if CLIENT_SECRET else 'Missing'}, TENANT_ID={TENANT_ID}")
 
 EMAIL_SENDER = "eitan.amit@spearuav.com"
@@ -36,6 +29,9 @@ if "access_token" not in token:
 access_token = token["access_token"]
 print("✅ Access Token Obtained Successfully")
 
+
+
+
 # Create email payload
 email_payload = {
     "message": {
@@ -51,12 +47,9 @@ email_payload = {
 }
 
 # Send email using Microsoft Graph API
-headers = {
-    "Authorization": f"Bearer {access_token}",
-    "Content-Type": "application/json"
-}
+headers = {    "Authorization": f"Bearer {access_token}",    "Content-Type": "application/json"}
 
-response = requests.post(GRAPH_API_URL, headers=headers, data=json.dumps(email_payload))
+response = requests.post(GRAPH_API_URL,headers=headers,data=json.dumps(email_payload))
 
 if response.status_code == 202:
     print("✅ Email sent successfully!")
