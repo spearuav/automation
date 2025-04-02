@@ -42,7 +42,7 @@ declare -A NOTIFY_EMAILS
 
 
 # Iterate over all repositories
-for repo in $(gh repo list $ORG --json name,defaultBranchRef --limit 200 --jq '.[] | @base64'); do
+for repo in $(gh repo list $ORG --no-archived --json name,defaultBranchRef --limit 200 --jq '.[] | @base64'); do
     repo_data=$(echo $repo | base64 --decode)
     repo_name=$(echo $repo_data | jq -r '.name')
     default_branch=$(echo $repo_data | jq -r '.defaultBranchRef.name')
